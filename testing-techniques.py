@@ -4,7 +4,6 @@ import unittest
 import requests
 import constants
 import random
-import time
 
 
 class MatrixTestingClass(unittest.TestCase):
@@ -14,27 +13,31 @@ class MatrixTestingClass(unittest.TestCase):
     access_token = ""
 
     def setUp(self):
-        self.server_address = 'https://' + self.server_ip + ':443/_matrix/client/v3'
+        self.server_address = 'https://' + self.server_ip + ':443/_matrix/client/v3'  # r0
 
     def tearDown(self):
         r = get_state(self)
-        try:
-            for room_info in r["rooms"]["join"]:
-                leave_room(self, room_info)
-                forget_room(self, room_info)
-        except:
-            pass
+        if "rooms" in r:
+            for room_id in r["rooms"]["join"]:
+                try:
+                    leave_room(self, room_id)
+                except:
+                    print("leave failed for " + room_id)
+                try:
+                    forget_room(self, room_id)
+                except:
+                    print("forget failed for " + room_id)
 
-
-    def test_valid_login(self):
-        r = login(self)
+    # TestCase 1
+    def test_create_room_not_logged_in(self):
+        r = login(self, password="wrongpassword")
+        r = create_room(self)
         response_data = r.json()
+        self.assertFalse(r.ok)
+        self.assertEqual(response_data["errcode"], "M_MISSING_TOKEN")
+        self.assertEqual(response_data["error"], "Invalid Authorization header.")    
 
-        self.assertIsNotNone(len(response_data["access_token"]), "access_token is missing from response")
-        self.assertGreater(len(response_data["access_token"]), 0, "access_token's length should be greater than 0")
-        self.assertTrue(r.ok)
-  
-
+    # TestCase 2
     def test_wrong_user(self):
         r = login(self, user="wrongusername")
         response_data = r.json()
@@ -43,7 +46,7 @@ class MatrixTestingClass(unittest.TestCase):
         self.assertEqual(response_data["errcode"], "M_FORBIDDEN")
         self.assertEqual(response_data["error"], "Invalid username or password")
 
-
+    # TestCase 3
     def test_wrong_password(self):
         r = login(self, password="wrongpassword")
         response_data = r.json()
@@ -52,6 +55,25 @@ class MatrixTestingClass(unittest.TestCase):
         self.assertEqual(response_data["errcode"], "M_FORBIDDEN")
         self.assertEqual(response_data["error"], "Invalid username or password")
 
+    # TestCase 4
+    def test_valid_login(self):
+        r = login(self)
+        response_data = r.json()
+
+        self.assertIsNotNone(len(response_data["access_token"]), "access_token is missing from response")
+        self.assertGreater(len(response_data["access_token"]), 0, "access_token's length should be greater than 0")
+        self.assertTrue(r.ok)
+
+    # TestCase 5
+    def test_send_message_non_existing_room(self):
+        login(self)
+        r = send_message(self, "!VurgtrNIhiKZAYJtjX:testing-techniques")
+        response_data = r.json()
+        self.assertEqual(response_data["error"], "Unknown room")
+        self.assertEqual(response_data["errcode"], "M_FORBIDDEN")
+        self.assertFalse(r.ok)
+
+    # TestCase 6
     def test_create_room(self):
         login(self)
         r = create_room(self)
@@ -59,23 +81,10 @@ class MatrixTestingClass(unittest.TestCase):
         self.assertIsNotNone(len(response_data["room_id"]), "room_id is missing from response")
         self.assertTrue(r.ok)
 
-    def test_leave_room(self):
-        login(self)
-        r = create_room(self)
-        response_data = r.json()
-        r = leave_room(self, response_data["room_id"])
-        self.assertTrue(r.ok)
+        state = get_state(self)
+        self.assertIsNotNone(state["rooms"]["join"][response_data["room_id"]])
 
-        
-    def test_forget_room(self):
-        login(self)
-        r = create_room(self)
-        response_data = r.json()
-        leave_room(self, response_data["room_id"])
-        r = forget_room(self, response_data["room_id"])
-        self.assertTrue(r.ok)
-        
-
+    # TestCase 7
     def test_send_message(self):
         message = "hello this is a test message :D\n"
 
@@ -85,8 +94,9 @@ class MatrixTestingClass(unittest.TestCase):
 
         r = send_message(self, room_id, message)
         event_id = r.json()["event_id"]
-        
-        self.assertIsNotNone(len(event_id), "event_id is missing from response")
+
+        self.assertIsNotNone(
+            len(event_id), "event_id is missing from response")
         self.assertTrue(r.ok)
 
         state = get_state(self)
@@ -95,21 +105,9 @@ class MatrixTestingClass(unittest.TestCase):
             if event["type"] == "m.room.message" and event["event_id"] == event_id and event["content"]["body"] == message:
                 message_found = True
                 break
-        self.assertTrue(message_found)
-            
+        self.assertTrue(message_found)    
 
-
-        
-
-    def test_send_message_non_existing_room(self):
-        login(self)
-        r = send_message(self, "!VurgtrNIhiKZAYJtjX:testing-techniques")
-        response_data = r.json()
-        self.assertEqual(response_data["error"], "Unknown room")
-        self.assertEqual(response_data["errcode"], "M_FORBIDDEN")
-        self.assertFalse(r.ok)
-    
-
+    # TestCase 8
     def test_edit_message(self):
         new_message = "i have been \nedited \na \nlot"
         login(self)
@@ -122,7 +120,8 @@ class MatrixTestingClass(unittest.TestCase):
         r = edit_message(self, room_id, event_id_send, new_message)
         event_id_edit = r.json()["event_id"]
 
-        self.assertIsNotNone(len(r.json()["event_id"]), "event_id is missing from response")
+        self.assertIsNotNone(
+            len(r.json()["event_id"]), "event_id is missing from response")
         self.assertTrue(r.ok)
 
         state = get_state(self)
@@ -133,8 +132,7 @@ class MatrixTestingClass(unittest.TestCase):
                 break
         self.assertTrue(edit_found)
 
-    
-
+    # TestCase 9
     def test_redact_message(self):
         login(self)
         r = create_room(self)
@@ -146,8 +144,9 @@ class MatrixTestingClass(unittest.TestCase):
         r = redact_message(self, room_id, event_id_send)
         event_id_redact = r.json()["event_id"]
 
-        self.assertIsNotNone(len(event_id_redact), "event_id is missing from response")
-        self.assertTrue(r.ok) 
+        self.assertIsNotNone(len(event_id_redact),
+                             "event_id is missing from response")
+        self.assertTrue(r.ok)
 
         state = get_state(self)
         redact_found = False
@@ -155,9 +154,49 @@ class MatrixTestingClass(unittest.TestCase):
             if event["type"] == "m.room.redaction" and event["event_id"] == event_id_redact:
                 redact_found = True
                 break
-        self.assertTrue(redact_found)     
+        self.assertTrue(redact_found)
 
+    # TestCase 10
+    def test_forget_room(self):
+        login(self)
+        r = create_room(self)
+        response_data = r.json()
+        leave_room(self, response_data["room_id"])
+        r = forget_room(self, response_data["room_id"])
+        self.assertTrue(r.ok)
 
+    # TestCase 11
+    def test_leave_room(self):
+        login(self)
+        r = create_room(self)
+        response_data = r.json()
+        r = leave_room(self, response_data["room_id"])
+        self.assertTrue(r.ok)
+
+        state = get_state(self)
+        self.assertRaises(
+            KeyError, lambda: state["rooms"]["join"][response_data["room_id"]])
+
+    # TestCase 12
+    def test_edit_message_after_leaving_room(self):
+        new_message = "i have been \nedited \na \nlot"
+        login(self)
+        r = create_room(self)
+        room_id = r.json()["room_id"]
+
+        r = send_message(self, room_id)
+        event_id_send = r.json()["event_id"]
+
+        leave_room(self, room_id)
+
+        r = edit_message(self, room_id, event_id_send, new_message)
+        response_data = r.json()
+
+        self.assertFalse(r.ok)
+        self.assertEqual(response_data["errcode"], "M_FORBIDDEN")
+        self.assertTrue(response_data["error"].__contains__("not in room " + room_id))
+
+    
 
 # individual functions to make chaining easy
 # context is the passed self in MatrixTestingClass so we can access it's internal variables
@@ -182,11 +221,11 @@ def login(context, user="matrixadmin", password="admin"):
     try:
         context.access_token = r.json()["access_token"]
     except:
-        pass
+        context.access_token = ""
 
     return r
 
-# returns room id as string
+# creates room
 
 
 def create_room(context):
@@ -204,7 +243,7 @@ def create_room(context):
 
     return r
 
-# leaves room returns nothing (check with get_state)
+# leaves room
 
 
 def leave_room(context, room_id):
@@ -218,7 +257,7 @@ def leave_room(context, room_id):
 
     return r
 
-# forgets room returns nothing (check with get_state)
+# forgets room
 
 
 def forget_room(context, room_id):
@@ -232,7 +271,7 @@ def forget_room(context, room_id):
 
     return r
 
-# returns the message event id
+# send a message
 
 
 def send_message(context, room_id, message="hello this is a test message :D\n"):
@@ -252,7 +291,9 @@ def send_message(context, room_id, message="hello this is a test message :D\n"):
     return r
 
 
-# edits message returns nothing (check with get_state)
+# edits message
+
+
 def edit_message(context, room_id, message_id, new_message="i have been \nedited \na \nlot"):
     command = "/rooms/" + str(room_id) + \
         "/send/m.room.message/" + str(random.random())
@@ -276,7 +317,7 @@ def edit_message(context, room_id, message_id, new_message="i have been \nedited
 
     return r
 
-# redact message returns nothing (check with get_state)
+# redact message
 
 
 def redact_message(context, room_id, message_id):
@@ -308,7 +349,6 @@ def get_state(context):
     r = requests.get(url=request_url, headers=headers, data=json.dumps(
         request_parameters), verify=False)
     response_data = r.json()
-    # context.assertTrue(r.ok)
     return response_data
 
 
