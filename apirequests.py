@@ -1,8 +1,7 @@
-from distutils.cmd import Command
 import json
-import unittest
-import requests
 import random
+
+import requests
 
 # individual functions to make chaining easy
 # context is the passed self in MatrixTestingClass so we can access it's internal variables

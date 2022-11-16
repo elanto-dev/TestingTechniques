@@ -1,7 +1,4 @@
-from distutils.cmd import Command
-import json
 import unittest
-import requests
 import constants
 import apirequests as api
 
