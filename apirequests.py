@@ -1,55 +1,42 @@
-from distutils.cmd import Command
 import json
-import unittest
-import requests
-import constants
 import random
 
-
-class MatrixTestingClass(unittest.TestCase):
-    # will run any function where the name starts with test_
-    server_ip = constants.server_ip
-    server_address = constants.server_ip
-    acsess_token = ""
-
-    def setUp(self):
-        self.server_address = 'https://' + self.server_ip + ':443/_matrix/client/v3'
-
-    def test_valid_login(self):
-        login(self)
-
+import requests
 
 # individual functions to make chaining easy
 # context is the passed self in MatrixTestingClass so we can access it's internal variables
 
-# returns the accsess token
-def login(context):
+# returns the response
+
+
+def login(context, user="matrixadmin", password="admin"):
     command = "/login"
     request_url = context.server_address + command
     request_parameters = {
         "identifier": {
             "type": "m.id.user",
-            "user": "matrixadmin"
+            "user": user
         },
         "initial_device_display_name": "Jungle Phone",
-        "password": "admin", "type": "m.login.password"
+        "password": password, "type": "m.login.password"
     }
     r = requests.post(url=request_url, data=json.dumps(
         request_parameters), verify=False)
-    response_data = r.json()
-    context.assertIsNotNone(
-        len(response_data["access_token"]), "access_token is missing from response")
-    context.assertGreater(len(
-        response_data["access_token"]), 0, "access_token's length should be greater than 0")
-    context.acsess_token = response_data["access_token"]
-    context.assertTrue(r.ok)
-    return response_data["access_token"]
 
-# returns room id as string
+    try:
+        context.access_token = r.json()["access_token"]
+    except:
+        context.access_token = ""
+
+    return r
+
+# creates room
+
+
 def create_room(context):
     command = "/createRoom"
     request_url = context.server_address + command
-    headers = {"Authorization": "Bearer " + context.acsess_token}
+    headers = {"Authorization": "Bearer " + context.access_token}
     request_parameters = {
         "name": "the big test room",
         "preset": "public_chat",
@@ -58,65 +45,67 @@ def create_room(context):
     }
     r = requests.post(url=request_url, headers=headers, data=json.dumps(
         request_parameters), verify=False)
-    response_data = r.json()
-    context.assertIsNotNone(
-        len(response_data["room_id"]), "room_id is missing from response")
-    context.assertTrue(r.ok)
-    return response_data["room_id"]
 
-# leaves room returns nothing (check with get_state)
+    return r
+
+# leaves room
+
+
 def leave_room(context, room_id):
     command = "/rooms/" + str(room_id) + "/leave"
     request_url = context.server_address + command
-    headers = {"Authorization": "Bearer " + context.acsess_token}
+    headers = {"Authorization": "Bearer " + context.access_token}
     request_parameters = {
     }
     r = requests.post(url=request_url, headers=headers, data=json.dumps(
         request_parameters), verify=False)
-    context.assertTrue(r.ok)
-    return
 
-# forgets room returns nothing (check with get_state)
+    return r
+
+# forgets room
+
+
 def forget_room(context, room_id):
     command = "/rooms/" + str(room_id) + "/forget"
     request_url = context.server_address + command
-    headers = {"Authorization": "Bearer " + context.acsess_token}
+    headers = {"Authorization": "Bearer " + context.access_token}
     request_parameters = {
     }
     r = requests.post(url=request_url, headers=headers, data=json.dumps(
         request_parameters), verify=False)
-    context.assertTrue(r.ok)
-    return
 
-# returns the message event id
-def send_message(context, room_id):
+    return r
+
+# send a message
+
+
+def send_message(context, room_id, message="hello this is a test message :D\n"):
     command = "/rooms/" + str(room_id) + \
         "/send/m.room.message/" + str(random.random())
     request_url = context.server_address + command
-    headers = {"Authorization": "Bearer " + context.acsess_token}
+    headers = {"Authorization": "Bearer " + context.access_token}
     request_parameters = {
-        "body": "hello this is a test message :D\n",
+        "body": message,
         "msgtype": "m.text",
         "type": "m.room.message",
         "sender": "@matrixadmin:testing-techniques"
     }
-    r = requests.post(url=request_url, headers=headers, data=json.dumps(
+    r = requests.put(url=request_url, headers=headers, data=json.dumps(
         request_parameters), verify=False)
-    response_data = r.json()
-    context.assertIsNotNone(
-        len(response_data["send_message_event_id"]), "send_message_event_id is missing from response")
-    context.assertTrue(r.ok)
-    return response_data["send_message_event_id"]
+
+    return r
 
 
-# edits message returns nothing (check with get_state)
-def edit_message(context, room_id, message_id):
+# edits message
+
+
+def edit_message(context, room_id, message_id, new_message="i have been \nedited \na \nlot"):
     command = "/rooms/" + str(room_id) + \
         "/send/m.room.message/" + str(random.random())
     request_url = context.server_address + command
-    headers = {"Authorization": "Bearer " + context.acsess_token}
+    headers = {"Authorization": "Bearer " + context.access_token}
     request_parameters = {
-        "body": "i have been \nedited \na \nlot",
+        "body": new_message,
         "msgtype": "m.text",
         "type": "m.room.message",
         "sender": "@matrixadmin:testing-techniques",
@@ -128,29 +117,29 @@ def edit_message(context, room_id, message_id):
             "rel_type": "m.replace",
             "event_id": str(message_id)}
     }
-    r = requests.post(url=request_url, headers=headers, data=json.dumps(
+    r = requests.put(url=request_url, headers=headers, data=json.dumps(
         request_parameters), verify=False)
-    response_data = r.json()
-    context.assertTrue(r.ok)
-    return
 
-# redact message returns nothing (check with get_state)
+    return r
+
+# redact message
+
+
 def redact_message(context, room_id, message_id):
     command = "/rooms/" + str(room_id) + "/redact/" + \
         str(message_id) + "/" + str(random.random())
     request_url = context.server_address + command
-    headers = {"Authorization": "Bearer " + context.acsess_token}
+    headers = {"Authorization": "Bearer " + context.access_token}
     request_parameters = {
         "body": "hello this is a test message :D\n",
         "msgtype": "m.text",
         "type": "m.room.message",
         "sender": "@matrixadmin:testing-techniques"
     }
-    r = requests.post(url=request_url, headers=headers, data=json.dumps(
+    r = requests.put(url=request_url, headers=headers, data=json.dumps(
         request_parameters), verify=False)
-    response_data = r.json()
-    context.assertTrue(r.ok)
-    return
+
+    return r
 
 
 # retrieves all information needed to populate the gui. should be used to check room creation deletion etc.
@@ -158,16 +147,12 @@ def redact_message(context, room_id, message_id):
 def get_state(context):
     command = "/sync"
     request_url = context.server_address + command
-    headers = {"Authorization": "Bearer " + context.acsess_token}
+    headers = {"Authorization": "Bearer " + context.access_token}
     request_parameters = {
 
     }
-    r = requests.post(url=request_url, headers=headers, data=json.dumps(
+    r = requests.get(url=request_url, headers=headers, data=json.dumps(
         request_parameters), verify=False)
     response_data = r.json()
-    context.assertTrue(r.ok)
     return response_data
 
-
-if __name__ == '__main__':
-    unittest.main()
