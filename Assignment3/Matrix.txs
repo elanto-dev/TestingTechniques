@@ -6,7 +6,7 @@ See LICENSE at root directory of this repository.
 
 -- ----------------------------------------------------------------------------------------- --
 -- Model of a Matrix application for login, room creation and message sending,
--- with inputs 'In !ValidLogin', 'In !InvalidLoginUser(s)', 'In !InvalidLoginPass(s)', and with output 'Out !x'. 
+-- with inputs 'In !ValidLogin', 'In !InvalidLogin(s)', and with output 'Out !resp'. 
 
 -- ----------------------------------------------------------------------------------------- --
 -- General Data Definitions
@@ -33,27 +33,16 @@ ENDDEF
 -- ----------------------------------------------------------------------------------------- --
 -- QueueOp :  operations on a queue
 --     constructors:
---       ValidLogin        :  request to Dequeue the next value
---       InvalidLogin(val)   :  
+--       ValidLogin     :  request to login using valid credentials
+--       InvalidLogin   :  request to login using invalid credentials
 --     generated standard functions:
 --       isValidLogin(lop) :  
---       isInvalidLoginUser(lop) :  
---       isInvalidLoginPass(lop) : 
-TYPEDEF  LoginOp   ::=   ValidLogin
-                       | InvalidLogin { val :: String }
+--       isInvalidLogin(lop) :  
+TYPEDEF  LoginOp   ::=   ValidLogin 
+                       | InvalidLogin 
 ENDDEF
 
-{-FUNCDEF correctUsernameOrPassword (x :: String) :: Bool 
-	::= 
-		x == "matrixadmin"
-ENDDEF-}
-
 PROCDEF matrixProcInvalidLogin [ In :: LoginOp; Out :: Response ] ( resp :: Response ) ::=
-		{-(
-			Inp ? lop [[isInvalidLoginUser(lop) /\ IF not(correctUsernameOrPassword(val(lop))) THEN True ELSE False FI ]]
-		## 
-			Inp ? lop [[isInvalidLoginPass(lop) /\ IF not(correctUsernameOrPassword(val(lop))) THEN True ELSE False FI ]]
-		)-}
 		In ? lop [[isInvalidLogin(lop)]]
 		>-> Out ! resp
 		>-> matrixProcInvalidLogin [In, Out] (resp)
@@ -80,5 +69,5 @@ CNECTDEF  Sut
         ENCODE     In ? lop               ->  ! toString(lop)
 
         CHAN  IN   Out                       HOST "localhost"  PORT 8567
-        DECODE     Out ! fromString(s)   <-   ? s
+        DECODE     Out ! fromString(r)   <-   ? r
 ENDDEF
