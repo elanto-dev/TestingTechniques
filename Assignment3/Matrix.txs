@@ -37,15 +37,41 @@ ENDDEF
 --       InvalidLogin   :  request to login using invalid credentials
 --     generated standard functions:
 --       isValidLogin(lop) :  
---       isInvalidLogin(lop) :  
+--       isInvalidUsernameLogin(lop) :  
+--       isInvalidPasswordLogin(lop) :  
 TYPEDEF  LoginOp   ::=   ValidLogin 
-                       | InvalidLogin 
+                       | InvalidUsernameLogin { username :: String }
+                       | InvalidPasswordLogin { password :: String }
 ENDDEF
 
-PROCDEF matrixProcInvalidLogin [ In :: LoginOp; Out :: Response ] ( resp :: Response ) ::=
-		In ? lop [[isInvalidLogin(lop)]]
-		>-> Out ! resp
-		>-> matrixProcInvalidLogin [In, Out] (resp)
+FUNCDEF isValidString (credentials :: LoginOp; isusername :: Bool) :: Bool
+   ::=
+		IF isusername THEN (strinre (username(credentials), REGEX ('[A-Z][a-z]*'))) ELSE (strinre (password(credentials), REGEX ('[A-Z][a-z]*'))) FI
+ENDDEF
+
+FUNCDEF isValidCredentials (credentials :: LoginOp; isusername :: Bool) :: Bool
+   ::=
+        IF isusername THEN(username(credentials) == "matrixadmin") ELSE (password(credentials) == "admin") FI
+ENDDEF
+
+PROCDEF matrixInvalidLogin [ In :: LoginOp; Out :: Response ] ( op :: LoginOp; isUsername :: Bool; resp :: Response ) ::=
+		[[ (isInvalidUsernameLogin ( op ) \/ isInvalidPasswordLogin ( op )) /\ not(isValidCredentials(op, isUsername)) {- /\ isValidString(op, isUsername)-}]]
+		=>> Out ! resp
+		>-> matrixProcInvalidLogin [In, Out] ( resp )
+ENDDEF
+
+PROCDEF matrixValidLogin [ In :: LoginOp; Out :: Response ] ( op :: LoginOp; resp :: Response ) ::=
+		[[ isValidLogin(op) ]]
+		=>> Out ! resp
+		>-> matrixProcInvalidLogin [In, Out] ( resp )
+ENDDEF
+
+PROCDEF matrixProcInvalidLogin [ Operation :: LoginOp; Out :: Response ] ( resp :: Response ) ::=
+		Operation ? op [[ isInvalidUsernameLogin ( op ) ]] >-> matrixInvalidLogin [ Operation, Out ] (op, True, resp)
+    ##
+        Operation ? op [[ isInvalidPasswordLogin ( op ) ]] >-> matrixInvalidLogin [ Operation, Out ] (op, False, resp)
+    ## 
+        Operation ? op [[ isValidLogin ( op ) ]] >-> matrixValidLogin [ Operation, Out ] (op, resp)
 ENDDEF
 
 CHANDEF  Channels  ::=    In   	:: LoginOp
@@ -57,7 +83,8 @@ MODELDEF  MatrixModel
         CHAN IN    In
         CHAN OUT   Out
 
-        BEHAVIOUR  matrixProcInvalidLogin [ In, Out ] ( Response( Forbidden, "" ) )
+        BEHAVIOUR  
+			matrixProcInvalidLogin [ In, Out ] ( Response(Forbidden, "") )
 ENDDEF
 
 
