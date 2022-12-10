@@ -39,39 +39,41 @@ ENDDEF
 --       isValidLogin(lop) :  
 --       isInvalidUsernameLogin(lop) :  
 --       isInvalidPasswordLogin(lop) :  
-TYPEDEF  LoginOp   ::=   ValidLogin 
-                       | InvalidUsernameLogin { username :: String }
-                       | InvalidPasswordLogin { password :: String }
+TYPEDEF  LoginOp   ::= InvalidUsernameLogin { invalidUsername :: String }
+                       | InvalidPasswordLogin { invalidPassword :: String }
+					   | ValidLogin { username, password :: String }
 ENDDEF
 
-FUNCDEF isValidString (credentials :: LoginOp; isusername :: Bool) :: Bool
-   ::=
-		IF isusername THEN (strinre (username(credentials), REGEX ('[A-Z][a-z]*'))) ELSE (strinre (password(credentials), REGEX ('[A-Z][a-z]*'))) FI
-ENDDEF
-
-FUNCDEF isValidCredentials (credentials :: LoginOp; isusername :: Bool) :: Bool
-   ::=
-        IF isusername THEN(username(credentials) == "matrixadmin") ELSE (password(credentials) == "admin") FI
-ENDDEF
-
-PROCDEF matrixInvalidLogin [ In :: LoginOp; Out :: Response ] ( op :: LoginOp; isUsername :: Bool; resp :: Response ) ::=
-		[[ (isInvalidUsernameLogin ( op ) \/ isInvalidPasswordLogin ( op )) /\ not(isValidCredentials(op, isUsername)) {- /\ isValidString(op, isUsername)-}]]
-		=>> Out ! resp
+PROCDEF matrixValidLogin [ In :: LoginOp; Out :: Response ] ( resp :: Response ) ::=
+		Out ! resp
 		>-> matrixProcInvalidLogin [In, Out] ( resp )
 ENDDEF
 
-PROCDEF matrixValidLogin [ In :: LoginOp; Out :: Response ] ( op :: LoginOp; resp :: Response ) ::=
-		[[ isValidLogin(op) ]]
-		=>> Out ! resp
+PROCDEF matrixInvalidLogin [ In :: LoginOp; Out :: Response ] ( resp :: Response ) ::=
+		Out ! resp
 		>-> matrixProcInvalidLogin [In, Out] ( resp )
+ENDDEF
+
+FUNCDEF isValid_InvalidUserNameLogin (op :: LoginOp) :: Bool ::=
+       (isInvalidUsernameLogin ( op ) /\ (strinre (invalidUsername(op), REGEX ('[A-Z][a-z][0-9]*'))))
+ENDDEF
+
+FUNCDEF isValid_InvalidPasswordLogin (op :: LoginOp) :: Bool ::=
+       (isInvalidPasswordLogin ( op ) /\ (strinre (invalidPassword(op), REGEX ('[A-Z][a-z][0-9]*'))))
+ENDDEF
+
+FUNCDEF isValid_ValidLogin (op :: LoginOp) :: Bool ::=
+       isValidLogin ( op ) /\ (username( op ) == "matrixadmin") /\ (password( op ) == "admin")
 ENDDEF
 
 PROCDEF matrixProcInvalidLogin [ Operation :: LoginOp; Out :: Response ] ( resp :: Response ) ::=
-		Operation ? op [[ isInvalidUsernameLogin ( op ) ]] >-> matrixInvalidLogin [ Operation, Out ] (op, True, resp)
-    ##
-        Operation ? op [[ isInvalidPasswordLogin ( op ) ]] >-> matrixInvalidLogin [ Operation, Out ] (op, False, resp)
+{-
+		Operation ? op [[ isValid_InvalidUserNameLogin ( op ) ]] >-> matrixInvalidLogin [ Operation, Out ] (resp)
     ## 
-        Operation ? op [[ isValidLogin ( op ) ]] >-> matrixValidLogin [ Operation, Out ] (op, resp)
+		Operation ? op [[ isValid_InvalidPasswordLogin ( op ) ]] >-> matrixInvalidLogin [ Operation, Out ] (resp)
+    ## 
+-}
+        Operation ? op [[ isValid_ValidLogin ( op ) ]] >-> matrixValidLogin [ Operation, Out ] (resp)
 ENDDEF
 
 CHANDEF  Channels  ::=    In   	:: LoginOp
