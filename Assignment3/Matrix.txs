@@ -30,52 +30,53 @@ TYPEDEF Response  ::=
 					}
 ENDDEF
 
+TYPEDEF  LoginOp   ::= 	    LoginCreds { username, password :: String }
+ENDDEF
 -- ----------------------------------------------------------------------------------------- --
--- QueueOp :  operations on a queue
+-- LoginOp :  operations on a queue
 --     constructors:
---       ValidLogin     :  request to login using valid credentials
---       InvalidLogin   :  request to login using invalid credentials
+--       LoginCreds    :  request to login using valid OR invalid credentials
 --     generated standard functions:
---       isValidLogin(lop) :  
---       isInvalidUsernameLogin(lop) :  
---       isInvalidPasswordLogin(lop) :  
-TYPEDEF  LoginOp   ::= InvalidUsernameLogin { invalidUsername :: String }
-                       | InvalidPasswordLogin { invalidPassword :: String }
-					   | ValidLogin { username, password :: String }
+--       isLoginCreds(lop) 
+
+----------------------------------------------------------------------------------------
+-- Input Validity functions
+
+FUNCDEF isValid_InvalidLogin (op :: LoginOp) :: Bool ::=
+       isLoginCreds ( op ) /\ (username( op ) == "wrong") /\ (password ( op ) == "wrong")  
+       --there was sth wrong with the regex until we figure it out we can use this dummy invalid user pass
 ENDDEF
 
+FUNCDEF isValid_ValidLogin (op :: LoginOp) :: Bool ::=
+       isLoginCreds ( op ) /\ (username( op ) == "matrixadmin") /\ (password( op ) == "admin")
+ENDDEF
+
+-------------------------------------------------------------------------------------------
+-- Successful (Valid) and unsuccessful (Invalid) login processes -> generates response 
 PROCDEF matrixValidLogin [ In :: LoginOp; Out :: Response ] ( resp :: Response ) ::=
 		Out ! resp
-		>-> matrixProcInvalidLogin [In, Out] ( resp )
+		>-> matrixLogin [In, Out] ( )
 ENDDEF
 
 PROCDEF matrixInvalidLogin [ In :: LoginOp; Out :: Response ] ( resp :: Response ) ::=
 		Out ! resp
-		>-> matrixProcInvalidLogin [In, Out] ( resp )
+		>-> matrixLogin [In, Out] ()
 ENDDEF
 
-FUNCDEF isValid_InvalidUserNameLogin (op :: LoginOp) :: Bool ::=
-       (isInvalidUsernameLogin ( op ) /\ (strinre (invalidUsername(op), REGEX ('[A-Z][a-z][0-9]*'))))
+-------------------------------------------------------------------------------------------
+-- Main process, makes a choice between valid login and invalid login
+
+
+PROCDEF matrixLogin [ Operation :: LoginOp; Out :: Response ] () ::=
+
+       (Operation ? op [[isValid_InvalidLogin(op)]] >->  matrixInvalidLogin [ Operation, Out ] (Response(Forbidden, ""))
+       ##
+       Operation ? op [[isValid_ValidLogin(op)]] >->  matrixValidLogin [ Operation, Out ] (Response(OK, "")))
 ENDDEF
 
-FUNCDEF isValid_InvalidPasswordLogin (op :: LoginOp) :: Bool ::=
-       (isInvalidPasswordLogin ( op ) /\ (strinre (invalidPassword(op), REGEX ('[A-Z][a-z][0-9]*'))))
-ENDDEF
 
-FUNCDEF isValid_ValidLogin (op :: LoginOp) :: Bool ::=
-       isValidLogin ( op ) /\ (username( op ) == "matrixadmin") /\ (password( op ) == "admin")
-ENDDEF
-
-PROCDEF matrixProcInvalidLogin [ Operation :: LoginOp; Out :: Response ] ( resp :: Response ) ::=
-{-
-		Operation ? op [[ isValid_InvalidUserNameLogin ( op ) ]] >-> matrixInvalidLogin [ Operation, Out ] (resp)
-    ## 
-		Operation ? op [[ isValid_InvalidPasswordLogin ( op ) ]] >-> matrixInvalidLogin [ Operation, Out ] (resp)
-    ## 
--}
-        Operation ? op [[ isValid_ValidLogin ( op ) ]] >-> matrixValidLogin [ Operation, Out ] (resp)
-ENDDEF
-
+-------------------------------------------------------------------------------------------
+-- Channel, Model and Adapter Definitions
 CHANDEF  Channels  ::=    In   	:: LoginOp
                         ; Out  	:: Response
 ENDDEF
@@ -85,17 +86,24 @@ MODELDEF  MatrixModel
         CHAN IN    In
         CHAN OUT   Out
 
-        BEHAVIOUR  
-			matrixProcInvalidLogin [ In, Out ] ( Response(Forbidden, "") )
+        BEHAVIOUR  matrixLogin [ In, Out ] ()
+
+			     
 ENDDEF
 
+--------------------------------------------------
+CONSTDEF separator :: String ::= "@" ENDDEF
+--------------------------------------------------
 
 CNECTDEF  Sut
    ::=
         CLIENTSOCK
 
         CHAN  OUT  In                         HOST "localhost"  PORT 8567
-        ENCODE     In ? lop               ->  ! toString(lop)
+        ENCODE     In ? lop               ->  ! toString(username(lop)) ++ separator ++
+        toString( password(lop)) 
+
+
 
         CHAN  IN   Out                       HOST "localhost"  PORT 8567
         DECODE     Out ! fromString(r)   <-   ? r
