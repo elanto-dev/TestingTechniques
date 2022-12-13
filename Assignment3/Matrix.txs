@@ -16,9 +16,11 @@ See LICENSE at root directory of this repository.
 --     constructors:
 --       OK       	:  HTTP 200 status code
 --       Forbidden 	:  HTTP 403 status code 
+--       Unauthorized :   HTTP 401 status code
 --     generated standard functions:
 --       isOK(s)  		:  check if status s matches OK
 --       isForbidden(s) :  check if status s matches Forbidden
+--       isUnauthorized : check if status matches Unauthorized
 
 TYPEDEF Statuses  ::= 	OK
 						| Forbidden
@@ -27,20 +29,20 @@ ENDDEF
 TYPEDEF Response  ::=   
 		Response 	{ code :: Statuses
 					; data :: String
-					}
-ENDDEF
-
-TYPEDEF  LoginOp   ::= 	    LoginCreds { username, password :: String }
+					} 
+                                   -- i think we should remove the data part because torxakis can't possibly guess right access tokens
 ENDDEF
 -- ----------------------------------------------------------------------------------------- --
--- LoginOp :  operations on a queue
+-- LoginOp :  operations in a login
 --     constructors:
 --       LoginCreds    :  request to login using valid OR invalid credentials
 --     generated standard functions:
 --       isLoginCreds(lop) 
 
+TYPEDEF  LoginOp   ::= 	    LoginCreds { username, password :: String }
+ENDDEF
 ----------------------------------------------------------------------------------------
--- Input Validity functions
+-- Login Input Validity Functions
 
 FUNCDEF isValid_InvalidLogin (op :: LoginOp) :: Bool ::=
        isLoginCreds ( op ) /\ (username( op ) == "wrong") /\ (password ( op ) == "wrong")  
@@ -49,6 +51,29 @@ ENDDEF
 
 FUNCDEF isValid_ValidLogin (op :: LoginOp) :: Bool ::=
        isLoginCreds ( op ) /\ (username( op ) == "matrixadmin") /\ (password( op ) == "admin")
+ENDDEF
+-- ----------------------------------------------------------------------------------------- --
+-- CreateRoomOp :  operations in a room creation
+--     constructors:
+--       RoomDetails    :  request to login using valid OR invalid credentials
+--     generated standard functions:
+--       isRoomDetails(lop) 
+
+TYPEDEF CreateRoomOp ::=        RoomDetails {roomname,roomtopic,roompreset, accesstoken :: String;
+                                             roomversion :: Int}
+ENDDEF
+
+----------------------------------------------------------------------------------------------
+-- CreateRoomOp Input Validity Function --> making sure torxakis makes the right request with valid fields
+FUNCDEF isValidRoomDetails ( cop :: CreateRoomOp) :: Bool ::=
+       isRoomDetails ( cop ) /\ (roomname ( cop ) == "anyname") /\ (roomtopic (cop) == "anytopic") /\ (roompreset (cop) == "public_chat")
+       /\ (roomversion (cop) == 1) 
+       {-things should change to a proper regex -}
+ENDDEF
+
+FUNCDEF isInvalidRoomDetails ( cop :: CreateRoomOp) :: Bool ::=
+       isRoomDetails ( cop ) /\ (roomname ( cop ) == "anyname") /\ (roomtopic (cop) == "anytopic") /\ (roompreset(cop)== "public_chat")
+       /\ (roomversion(cop) == 1) {-things should change to a proper regex -}
 ENDDEF
 
 -------------------------------------------------------------------------------------------
@@ -64,7 +89,7 @@ PROCDEF matrixInvalidLogin [ In :: LoginOp; Out :: Response ] ( resp :: Response
 ENDDEF
 
 -------------------------------------------------------------------------------------------
--- Main process, makes a choice between valid login and invalid login
+-- Main Login Process, makes a choice between valid login and invalid login
 
 
 PROCDEF matrixLogin [ Operation :: LoginOp; Out :: Response ] () ::=
@@ -73,6 +98,35 @@ PROCDEF matrixLogin [ Operation :: LoginOp; Out :: Response ] () ::=
        ##
        Operation ? op [[isValid_ValidLogin(op)]] >->  matrixValidLogin [ Operation, Out ] (Response(OK, "")))
 ENDDEF
+---------------------------------------------------------------------------------------------
+--create a room scenario
+ --auth code needed
+
+-- PROCDEF matrixValidCreateRoom [ In :: CreateRoomOp ; Out :: Response] (resp :: Response) ::=
+--        Out ! resp 
+--        >-> matrixCreateRoom [In , Out ] ()
+-- ENDDEF
+
+-- PROCDEF matrixInvalidCreateRoom [ In :: CreateRoomOp ; Out :: Response] (resp :: Response) ::=
+--        Out ! resp 
+--        >-> matrixCreateRoom [In , Out ] ()
+-- ENDDEF
+
+-- PROCDEF matrixCreateRoom [Operation:: CreateRoomOp ; Out :: Response]() ::=
+--        Operation ? op [[isValidRoomDetails(op)]] >->  matrixValidCreateRoom [ Operation, Out ] (Response(OK, "")) 
+--        ##
+--        Operation ? op [[isInvalidRoomDetails(op)]] >-> matrrixInvalidCreateRoom [ Operation, Out] (Response(Forbidden,""))
+-- ENDDEF
+
+
+
+----------------------------------------------------------------------------------------------
+-- send message scenario
+-- PROCDEF matrixSendMessage [Operation:: LoginOp; Out :: Response]():
+
+-- ENDDEF
+
+
 
 
 -------------------------------------------------------------------------------------------
@@ -86,7 +140,10 @@ MODELDEF  MatrixModel
         CHAN IN    In
         CHAN OUT   Out
 
-        BEHAVIOUR  matrixLogin [ In, Out ] ()
+        BEHAVIOUR  (matrixLogin [ In, Out ] ()
+                     -- ## matrixCreateRoom [ In , Out] () 
+                     )
+
 
 			     
 ENDDEF
@@ -101,8 +158,10 @@ CNECTDEF  Sut
 
         CHAN  OUT  In                         HOST "localhost"  PORT 8567
         ENCODE     In ? lop               ->  ! toString(username(lop)) ++ separator ++
-        toString( password(lop)) 
+                                                toString(password(lop)) 
 
+        ENCODE     In ? cop                ->  ! toString(username(cop)) ++ separator ++
+                                                 toString(password(cop)) 
 
 
         CHAN  IN   Out                       HOST "localhost"  PORT 8567
