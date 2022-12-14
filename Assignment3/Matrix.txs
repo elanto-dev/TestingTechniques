@@ -116,8 +116,8 @@ ENDDEF
 PROCDEF matrixCreateRoom [Operation:: CreateRoomOp ; CreateRoomOut :: Response]() ::=
 
        Operation ? op [[isValidRoomDetails(op)]] >->  matrixValidCreateRoom [ Operation, CreateRoomOut ] (Response(OK)) 
-       ##
-       Operation ? op [[isInvalidRoomDetails(op)]] >-> matrrixInvalidCreateRoom [ Operation, CreateRoomOut] (Response(Unauthorized))
+       -- ##
+       -- Operation ? op [[isInvalidRoomDetails(op)]] >-> matrrixInvalidCreateRoom [ Operation, CreateRoomOut] (Response(Unauthorized))
        -- ##
        -- Operation ? op [[isInvalidRoomDetails(op) {-maybe dif cond-}]] >-> matrrixInvalidCreateRoom [ Operation, Out] (Response(Forbidden))
 ENDDEF
@@ -125,7 +125,15 @@ ENDDEF
 
 
 ----------------------------------------------------------------------------------------------
+--- Input validity for deleting a room 
+
+
+
 -- send message scenario
+
+
+
+
 -- PROCDEF matrixSendMessage [Operation:: LoginOp; Out :: Response]():
 
 -- ENDDEF
@@ -148,9 +156,9 @@ MODELDEF  MatrixModel
         CHAN OUT   LoginOut,CreateRoomOut
 
         BEHAVIOUR  (
-                     matrixLogin [ LoginIn, LoginOut ] ()
+                     -- matrixLogin [ LoginIn, LoginOut ] ()
                      -- ##
-                     --  matrixCreateRoom [ CreateRoomIn , Out] () 
+                      matrixCreateRoom [ CreateRoomIn , CreateRoomOut] () 
                      )
 
 
@@ -164,17 +172,25 @@ CONSTDEF separator :: String ::= "@" ENDDEF
 CNECTDEF  Sut::=
         CLIENTSOCK
 
-        CHAN  OUT  LoginIn                         HOST "localhost"  PORT 8567
+        CHAN  OUT  LoginIn                         HOST "localhost"  PORT 8568
         ENCODE     LoginIn ? lop               ->  ! toString(username(lop)) ++ separator ++
                                                 toString(password(lop)) 
 
-       CHAN  OUT  CreateRoomIn                         HOST "localhost"  PORT 8568
-       ENCODE CreateRoomIn ? op                     ->    !  toString(op)
+       CHAN  OUT  CreateRoomIn                         HOST "localhost"  PORT 8567
+       ENCODE CreateRoomIn ? op                     ->    !  toString(roomname(op)) ++ separator ++
+                                                             toString(roomtopic(op)) ++ separator ++
+                                                             toString(roompreset(op)) ++ separator ++
+                                                             toString(roomversion(op)) ++ separator ++
+                                                             toString(accesstoken(op)) 
+
+
+
+                                                             
 
         
-        CHAN  IN   LoginOut                       HOST "localhost"  PORT 8567
+        CHAN  IN   LoginOut                       HOST "localhost"  PORT 8568
         DECODE     LoginOut ! fromString(r)   <-   ? r
 
-        CHAN  IN   CreateRoomOut                       HOST "localhost"  PORT 8568
+        CHAN  IN   CreateRoomOut                       HOST "localhost"  PORT 8567
         DECODE     CreateRoomOut ! fromString(r)   <-   ? r
 ENDDEF
