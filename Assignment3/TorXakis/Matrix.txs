@@ -5,57 +5,55 @@ See LICENSE at root directory of this repository.
 -}
 
 -- ----------------------------------------------------------------------------------------- --
--- Model of a Matrix application for login, room creation and message sending,
--- with inputs 'In !ValidLogin', 'In !InvalidLogin(s)', and with output 'Out !resp'. 
+-- Model of a Matrix application for login and room creation.
 
--- ----------------------------------------------------------------------------------------- --
+-------------------------------------------------------------------------------------------
 -- General Data Definitions
 
--- ----------------------------------------------------------------------------------------- --
+-------------------------------------------------------------------------------------------
 --   Codes :  an enumeration of HTTP statuses
 --     constructors:
---       OK       	:  HTTP 200 status code
---       Forbidden 	:  HTTP 403 status code 
---       Unauthorized :   HTTP 401 status code
---     generated standard functions:
---       isOK(s)  		:  check if status s matches OK
---       isForbidden(s) :  check if status s matches Forbidden
---       isUnauthorized :  check if status matches Unauthorized
+--       OK       		:  HTTP 200 status code
+--       Forbidden 		:  HTTP 403 status code 
+--       Unauthorized 	:   HTTP 401 status code
 
 TYPEDEF Statuses  ::= 	OK
 						| Forbidden
                         | Unauthorized
 ENDDEF
 
+-------------------------------------------------------------------------------------------
+--   Response :  response received from SUT
+--     constructors:
+--       Response       	:  response with status code
+
 TYPEDEF Response  ::=   
 		Response 	{ code :: Statuses} 
 ENDDEF
--- ----------------------------------------------------------------------------------------- --
+
+-------------------------------------------------------------------------------------------
 -- LoginOp :  operations in a login
 --     constructors:
 --       LoginCreds    :  request to login using valid OR invalid credentials
---     generated standard functions:
---       isLoginCreds(lop) 
 
 TYPEDEF  LoginOp   ::= 	    LoginCreds { username, password :: String }
 ENDDEF
-----------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------
 -- Login Input Validity Functions
 
 FUNCDEF isValid_InvalidLogin (op :: LoginOp) :: Bool ::=
        isLoginCreds ( op ) /\ (len(username( op )) > 5) /\ (len(password( op )) > 5)  
-       --there was sth wrong with the regex until we figure it out we can use this dummy invalid user pass
 ENDDEF
 
 FUNCDEF isValid_ValidLogin (op :: LoginOp) :: Bool ::=
        isLoginCreds ( op ) /\ (username( op ) == "matrixadmin") /\ (password( op ) == "admin")
 ENDDEF
--- ----------------------------------------------------------------------------------------- --
+
+-------------------------------------------------------------------------------------------
 -- CreateRoomOp :  operations in a room creation
 --     constructors:
 --       RoomDetails    :  request to login using valid OR invalid credentials
---     generated standard functions:
---       isRoomDetails(lop) 
 
 TYPEDEF CreateRoomOp ::= RoomDetails {roomname,roomtopic,roompreset, accesstoken :: String;
                                       roomversion :: Int}
@@ -88,13 +86,13 @@ ENDDEF
 ----------------------------------------------------------------------------------------------
 -- CreateRoomOp Input Validity Function --> making sure torxakis makes the right request with valid fields
 
-FUNCDEF isValidRoomDetails ( cop :: CreateRoomOp) :: Bool ::=
+FUNCDEF isValid_RoomDetails ( cop :: CreateRoomOp) :: Bool ::=
        isRoomDetails ( cop ) /\ (roomname ( cop ) == "anyname") /\ (roomtopic (cop) == "anytopic") /\ (roompreset (cop) == "public_chat")
        /\ (roomversion (cop) == 1) /\ (accesstoken(cop) == "correcttoken")
        {-things should change to a proper regex -}
 ENDDEF
 
-FUNCDEF isInvalidRoomDetails ( cop :: CreateRoomOp) :: Bool ::=
+FUNCDEF isValid_InvalidRoomDetails ( cop :: CreateRoomOp) :: Bool ::=
        isRoomDetails ( cop ) /\ (roomname ( cop ) == "anyname") /\ (roomtopic (cop) == "anytopic") /\ (roompreset(cop)== "public_chat")
        /\ (roomversion(cop) == 1) /\ (accesstoken(cop) == "wrongtoken"){-things should change to a proper regex -}
 ENDDEF
@@ -115,31 +113,10 @@ ENDDEF
 
 PROCDEF matrixCreateRoom [Operation:: CreateRoomOp ; CreateRoomOut :: Response]() ::=
 
-       (Operation ? op [[isValidRoomDetails(op)]] >->  matrixValidCreateRoom [ Operation, CreateRoomOut ] (Response(OK)))
+       (Operation ? op [[isValid_RoomDetails(op)]] >->  matrixValidCreateRoom [ Operation, CreateRoomOut ] (Response(OK)))
        ##
-       Operation ? op [[isInvalidRoomDetails(op)]] >-> matrrixInvalidCreateRoom [ Operation, CreateRoomOut] (Response(Unauthorized))
-       -- ##
-       -- Operation ? op [[isInvalidRoomDetails(op) {-maybe dif cond-}]] >-> matrrixInvalidCreateRoom [ Operation, Out] (Response(Forbidden))
+       Operation ? op [[isValid_InvalidRoomDetails(op)]] >-> matrrixInvalidCreateRoom [ Operation, CreateRoomOut] (Response(Unauthorized))
 ENDDEF
-
-
-
-----------------------------------------------------------------------------------------------
---- Input validity for deleting a room 
-
-
-
--- send message scenario
-
-
-
-
--- PROCDEF matrixSendMessage [Operation:: LoginOp; Out :: Response]():
-
--- ENDDEF
-
-
-
 
 -------------------------------------------------------------------------------------------
 -- Channel, Model and Adapter Definitions
@@ -159,9 +136,9 @@ MODELDEF  MatrixModel
 			     
 ENDDEF
 
---------------------------------------------------
+-------------------------------------------------------------------------------------------
 CONSTDEF separator :: String ::= "@" ENDDEF
---------------------------------------------------
+-------------------------------------------------------------------------------------------
 
 CNECTDEF  Sut::=
         CLIENTSOCK

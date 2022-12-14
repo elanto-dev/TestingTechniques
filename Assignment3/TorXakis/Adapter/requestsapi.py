@@ -24,7 +24,6 @@ def login(user, password):
         access_token = r.json()["access_token"]
     except:
         access_token = ""
-    # print(access_token)
     return r,access_token
 
 def create_room(access_token,name,preset,room_version,topic):
@@ -41,10 +40,3 @@ def create_room(access_token,name,preset,room_version,topic):
         request_parameters), verify=False)
     print("successfully created a room")
     return r
-
-# response , token = login(user,password)
-# create_room(token)
-# print("room created")
-
-
-

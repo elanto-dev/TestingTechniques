@@ -1,7 +1,5 @@
 import socket
 import threading
-import constants
-import apirequests as api
 from requestsapi import login, create_room
 seperator = '@' #this will help getting username and password from torxakis very easily
 host = "localhost"
@@ -22,8 +20,6 @@ def loginOutput(mess_in):
     elif response.status_code   == 403:
         mess_out = 'Response(Forbidden)\n'
         return mess_out
-
-
 
 def roomCreateInput(mess_in):
         fields = mess_in.split(seperator)
