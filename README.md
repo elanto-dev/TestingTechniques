@@ -12,3 +12,7 @@ Project structure:
 * ___apitests.py___ contains the unit tests for 12 black-box test cases described in the first assignment;
 * ___apirequests.py___ contains code that sends the requests to the Matrix homeserver and registers the responses;
 * ___constants.py___ contains constant values used in this project.
+
+## Assignment 3
+
+We used TorXakis and AltWalker model-based testing tools to create models of our SUT and to test them using MBT approach.  
