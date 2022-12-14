@@ -30,14 +30,28 @@ def loginOutput(mess_in):
         return mess_out
 
 
+
+def roomCreateInput(mess_in):
+        fields = mess_in.split(seperator)
+        name = fields[0].strip() #Strip white spaces
+        topic = fields[1].strip() 
+        preset = fields[2].strip() 
+        version = fields[3].strip() 
+        accesstokenmodel = fields[4].strip() 
+        
+        if accesstokenmodel == "correcttoken":
+            logresponse, access_token = login("matrixadmin","admin")
+            crresponse = create_room(access_token,name,preset,version,topic)
+        else:
+            crresponse = create_room(accesstokenmodel,name,preset,version,topic)
+        return crresponse
+        
 def roomCreateOutput(mess_in):
-    logresponse , access_token = loginInput(mess_in)
-    roomresponse = create_room(access_token)
+    response = roomCreateInput(mess_in)
     if response.status_code   == 200:
         mess_out = 'ResponseCode(OK)\n' 
-        conn.send(mess_out.encode())
     elif response.status_code   == 403:
-        mess_out = 'Response(Forbidden)\n'
+        mess_out = 'ResponseCode(Forbidden)\n'
     return mess_out
     
 
@@ -71,13 +85,10 @@ while True:
         print('we are using create room port')
         data = conn1.recv(1024)
         received = data.decode()
-        if not data:
-            print("not data")
-            break
         print("Data received: ",  received )
-        sent = 'Response(OK)\n'
-        conn1.send(sent.encode())
-        print("Data sent: ",  sent )
+        mess_out = roomCreateOutput(received)
+        conn1.send(mess_out.encode())
+        print("Data sent: ",  mess_out )
 
     elif conn2:
         print('we are using login port')

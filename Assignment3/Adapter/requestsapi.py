@@ -27,15 +27,15 @@ def login(user, password):
     # print(access_token)
     return r,access_token
 
-def create_room(access_token):
+def create_room(access_token,name,preset,room_version,topic):
     command = "/createRoom"
     request_url = server_address + command
     headers = {"Authorization": "Bearer " + access_token}
     request_parameters = {
-        "name": "torxakis support group",
-        "preset": "public_chat",
-        "room_version": "1",
-        "topic": "All about not existing for very long."
+        "name": name,
+        "preset": preset,
+        "room_version": room_version,
+        "topic": topic
     }
     r = requests.post(url=request_url, headers=headers, data=json.dumps(
         request_parameters), verify=False)
