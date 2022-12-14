@@ -1,0 +1,176 @@
+19:27:44.457 [main] DEBUG org.graphwalker.io.factory.json.JsonContextFactory - {	"name": "Default Models",	"models": [		{			"name": "Matrix",			"generator": "random(edge_coverage(100) && vertex_coverage(100))",			"startElementId": "v0",			"vertices": [				{					"id": "v0",					"name": "Logged_Out"				},				{					"id": "v2",					"name": "Logged_In"				},				{					"id": "v3",					"name": "Made_Room"				},				{					"id": "v4",					"name": "Message_Sent"				},				{					"id": "v5",					"name": "Message_Edited"				},				{					"id": "v6",					"name": "Room_Left"				},				{					"id": "v1",					"name": "Message_Redacted"				}			],			"edges": [				{					"id": "e0",					"name": "log_in",					"sourceVertexId": "v0",					"targetVertexId": "v2"				},				{					"id": "e1",					"name": "log_out",					"sourceVertexId": "v2",					"targetVertexId": "v0"				},				{					"id": "e2",					"name": "create_room",					"sourceVertexId": "v2",					"targetVertexId": "v3"				},				{					"id": "e4",					"name": "send_message",					"sourceVertexId": "v3",					"targetVertexId": "v4"				},				{					"id": "e6",					"name": "redact_message",					"sourceVertexId": "v4",					"targetVertexId": "v1"				},				{					"id": "e5",					"name": "edit_message",					"sourceVertexId": "v4",					"targetVertexId": "v5"				},				{					"id": "e7",					"name": "redact_message",					"sourceVertexId": "v5",					"targetVertexId": "v1"				},				{					"id": "e8",					"name": "leave_room",					"sourceVertexId": "v3",					"targetVertexId": "v6"				},				{					"id": "e9",					"name": "forget_room",					"sourceVertexId": "v6",					"targetVertexId": "v2"				},				{					"id": "e3",					"sourceVertexId": "v1",					"targetVertexId": "v3",					"name": "tau"				}			],			"actions": []		}	]}
+Dec 14, 2022 7:27:45 PM com.sun.jersey.server.impl.application.WebApplicationImpl _initiate
+INFO: Initiating Jersey application, version 'Jersey: 1.19.4 05/24/2017 03:20 PM'
+Dec 14, 2022 7:27:45 PM org.glassfish.grizzly.http.server.NetworkListener start
+INFO: Started listener bound to [0.0.0.0:8887]
+Dec 14, 2022 7:27:45 PM org.glassfish.grizzly.http.server.HttpServer start
+INFO: [HttpServer] Started.
+Try http://localhost:8887/graphwalker/hasNext or http://localhost:8887/graphwalker/getNext
+Press Control+C to end...
+19:27:45.845 [Grizzly(2)] DEBUG org.graphwalker.restful.Restful - Received restart
+19:27:45.858 [Grizzly(5)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:45.863 [Grizzly(17)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:45.863 [Grizzly(17)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:45.863 [Grizzly(17)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Logged_Out' in model: 'Matrix'
+19:27:45.892 [Grizzly(22)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:45.900 [Grizzly(7)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:45.929 [Grizzly(9)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:45.933 [Grizzly(11)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:45.933 [Grizzly(11)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:45.934 [Grizzly(11)] INFO org.graphwalker.core.generator.SingletonRandomGenerator - Seed: 23591875111300
+19:27:45.935 [Grizzly(11)] DEBUG org.graphwalker.core.generator.QuickRandomPath - New selected target is: v6 - Room_Left
+19:27:45.938 [Grizzly(11)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'log_in' in model: 'Matrix'
+19:27:45.942 [Grizzly(13)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:46.172 [Grizzly(4)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:46.176 [Grizzly(15)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:46.176 [Grizzly(15)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:46.176 [Grizzly(15)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Logged_In' in model: 'Matrix'
+19:27:46.180 [Grizzly(20)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:46.442 [Grizzly(14)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:46.446 [Grizzly(2)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:46.446 [Grizzly(2)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:46.446 [Grizzly(2)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'create_room' in model: 'Matrix'
+19:27:46.450 [Grizzly(5)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:46.725 [Grizzly(17)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:46.730 [Grizzly(22)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:46.730 [Grizzly(22)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:46.730 [Grizzly(22)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Made_Room' in model: 'Matrix'
+19:27:46.735 [Grizzly(7)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:46.999 [Grizzly(9)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:47.003 [Grizzly(11)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:47.003 [Grizzly(11)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:47.003 [Grizzly(11)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'leave_room' in model: 'Matrix'
+19:27:47.008 [Grizzly(13)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:47.048 [Grizzly(4)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:47.052 [Grizzly(15)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:47.052 [Grizzly(15)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:47.052 [Grizzly(15)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Room_Left' in model: 'Matrix'
+19:27:47.056 [Grizzly(20)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:47.323 [Grizzly(14)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:47.326 [Grizzly(2)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:47.326 [Grizzly(2)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:47.326 [Grizzly(2)] DEBUG org.graphwalker.core.generator.QuickRandomPath - New selected target is: e3 - tau
+19:27:47.326 [Grizzly(2)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'forget_room' in model: 'Matrix'
+19:27:47.331 [Grizzly(5)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:47.358 [Grizzly(17)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:47.361 [Grizzly(22)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:47.361 [Grizzly(22)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:47.361 [Grizzly(22)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Logged_In' in model: 'Matrix'
+19:27:47.366 [Grizzly(7)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:47.396 [Grizzly(9)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:47.401 [Grizzly(11)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:47.401 [Grizzly(11)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:47.401 [Grizzly(11)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'create_room' in model: 'Matrix'
+19:27:47.404 [Grizzly(13)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:47.669 [Grizzly(4)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:47.674 [Grizzly(15)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:47.674 [Grizzly(15)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:47.674 [Grizzly(15)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Made_Room' in model: 'Matrix'
+19:27:47.678 [Grizzly(20)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:48.166 [Grizzly(14)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:48.172 [Grizzly(2)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:48.172 [Grizzly(2)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:48.172 [Grizzly(2)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'send_message' in model: 'Matrix'
+19:27:48.176 [Grizzly(5)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:48.204 [Grizzly(17)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:48.208 [Grizzly(22)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:48.208 [Grizzly(22)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:48.208 [Grizzly(22)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Message_Sent' in model: 'Matrix'
+19:27:48.211 [Grizzly(7)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:48.461 [Grizzly(9)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:48.465 [Grizzly(11)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:48.466 [Grizzly(11)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:48.466 [Grizzly(11)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'redact_message' in model: 'Matrix'
+19:27:48.469 [Grizzly(13)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:48.499 [Grizzly(4)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:48.502 [Grizzly(15)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:48.502 [Grizzly(15)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:48.502 [Grizzly(15)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Message_Redacted' in model: 'Matrix'
+19:27:48.506 [Grizzly(20)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:48.757 [Grizzly(14)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:48.760 [Grizzly(2)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:48.760 [Grizzly(2)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:48.760 [Grizzly(2)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'tau' in model: 'Matrix'
+19:27:48.764 [Grizzly(5)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:48.770 [Grizzly(17)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:48.774 [Grizzly(22)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:48.774 [Grizzly(22)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:48.774 [Grizzly(22)] DEBUG org.graphwalker.core.generator.QuickRandomPath - New selected target is: v5 - Message_Edited
+19:27:48.774 [Grizzly(22)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Made_Room' in model: 'Matrix'
+19:27:48.778 [Grizzly(7)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:49.034 [Grizzly(9)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:49.037 [Grizzly(11)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:49.037 [Grizzly(11)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:49.037 [Grizzly(11)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'send_message' in model: 'Matrix'
+19:27:49.040 [Grizzly(13)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:49.079 [Grizzly(4)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:49.081 [Grizzly(15)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:49.082 [Grizzly(15)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:49.082 [Grizzly(15)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Message_Sent' in model: 'Matrix'
+19:27:49.085 [Grizzly(20)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:49.348 [Grizzly(14)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:49.351 [Grizzly(2)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:49.351 [Grizzly(2)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:49.351 [Grizzly(2)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'edit_message' in model: 'Matrix'
+19:27:49.354 [Grizzly(5)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:49.388 [Grizzly(17)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:49.391 [Grizzly(22)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:49.391 [Grizzly(22)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:49.391 [Grizzly(22)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Message_Edited' in model: 'Matrix'
+19:27:49.395 [Grizzly(7)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:49.661 [Grizzly(9)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:49.663 [Grizzly(11)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:49.663 [Grizzly(11)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:49.663 [Grizzly(11)] DEBUG org.graphwalker.core.generator.QuickRandomPath - New selected target is: e7 - redact_message
+19:27:49.664 [Grizzly(11)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'redact_message' in model: 'Matrix'
+19:27:49.668 [Grizzly(13)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:49.699 [Grizzly(4)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:49.702 [Grizzly(15)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:49.702 [Grizzly(15)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:49.702 [Grizzly(15)] DEBUG org.graphwalker.core.generator.QuickRandomPath - New selected target is: e1 - log_out
+19:27:49.702 [Grizzly(15)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Message_Redacted' in model: 'Matrix'
+19:27:49.706 [Grizzly(20)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:49.978 [Grizzly(14)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:49.981 [Grizzly(2)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:49.981 [Grizzly(2)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:49.981 [Grizzly(2)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'tau' in model: 'Matrix'
+19:27:49.984 [Grizzly(5)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:49.990 [Grizzly(17)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:49.994 [Grizzly(22)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:49.995 [Grizzly(22)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:49.995 [Grizzly(22)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Made_Room' in model: 'Matrix'
+19:27:50.000 [Grizzly(7)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:50.260 [Grizzly(9)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:50.263 [Grizzly(11)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:50.263 [Grizzly(11)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:50.263 [Grizzly(11)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'leave_room' in model: 'Matrix'
+19:27:50.268 [Grizzly(13)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:50.306 [Grizzly(4)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:50.309 [Grizzly(15)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:50.309 [Grizzly(15)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:50.309 [Grizzly(15)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Room_Left' in model: 'Matrix'
+19:27:50.312 [Grizzly(20)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:50.560 [Grizzly(14)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:50.563 [Grizzly(2)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:50.563 [Grizzly(2)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:50.564 [Grizzly(2)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'forget_room' in model: 'Matrix'
+19:27:50.568 [Grizzly(5)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:50.586 [Grizzly(17)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:50.590 [Grizzly(22)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:50.590 [Grizzly(22)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:50.590 [Grizzly(22)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Logged_In' in model: 'Matrix'
+19:27:50.593 [Grizzly(7)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:50.611 [Grizzly(9)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:50.614 [Grizzly(11)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:50.614 [Grizzly(11)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:50.614 [Grizzly(11)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'log_out' in model: 'Matrix'
+19:27:50.617 [Grizzly(13)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:50.641 [Grizzly(4)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:50.644 [Grizzly(15)] DEBUG org.graphwalker.restful.Restful - Received getNext
+19:27:50.644 [Grizzly(15)] DEBUG org.graphwalker.core.machine.SimpleMachine - Context: org.graphwalker.io.factory.json.JsonContext@62e7dffa
+19:27:50.644 [Grizzly(15)] DEBUG org.graphwalker.core.generator.QuickRandomPath - New selected target is: v3 - Made_Room
+19:27:50.644 [Grizzly(15)] DEBUG org.graphwalker.core.machine.ExecutionContext - Execute method: 'Logged_Out' in model: 'Matrix'
+19:27:50.646 [Grizzly(20)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:50.660 [Grizzly(14)] DEBUG org.graphwalker.restful.Restful - Received hasNext
+19:27:50.663 [Grizzly(2)] DEBUG org.graphwalker.restful.Restful - Received getData
+19:27:50.685 [Grizzly(5)] DEBUG org.graphwalker.restful.Restful - Received getStatistics

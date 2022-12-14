@@ -1,0 +1,8 @@
+In order to run the code:
+1. Modify the path in test.py to point to the modules diretory
+2. Modify the constants.py and set the server_ip to the VM IP address (see the Appendix in the report on how the retrieve this address)
+3. run the commands from the test-project directory
+
+possible commands:
+'altwalker online tests -m models/matrix.json "random(edge_coverage(100))"'
+'altwalker online tests -m models/matrix.json "random(vertex_coverage(100))"'
