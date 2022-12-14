@@ -43,7 +43,7 @@ ENDDEF
 -- Login Input Validity Functions
 
 FUNCDEF isValid_InvalidLogin (op :: LoginOp) :: Bool ::=
-       isLoginCreds ( op ) /\ (username( op ) == "wrong") /\ (password ( op ) == "wrong")  
+       isLoginCreds ( op ) /\ (len(username( op )) > 5) /\ (len(password( op )) > 5)  
        --there was sth wrong with the regex until we figure it out we can use this dummy invalid user pass
 ENDDEF
 
@@ -57,8 +57,8 @@ ENDDEF
 --     generated standard functions:
 --       isRoomDetails(lop) 
 
-TYPEDEF CreateRoomOp ::=        RoomDetails {roomname,roomtopic,roompreset, accesstoken :: String;
-                                             roomversion :: Int}
+TYPEDEF CreateRoomOp ::= RoomDetails {roomname,roomtopic,roompreset, accesstoken :: String;
+                                      roomversion :: Int}
 ENDDEF
 
 

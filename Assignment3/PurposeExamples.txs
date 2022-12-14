@@ -1,27 +1,11 @@
 PROCDEF examples [ LoginIn :: LoginOp; LoginOut :: Response ] () HIT ::=
-    LoginIn ! LoginCreds("wrong","wrong") 
-    >-> matrixInvalidLogin [ LoginIn , LoginOut] (Response(Forbidden))
-    -- >-> In ! LoginOp("correctPass")
-    -- >-> Out ! Response( Forbidden)
-    -- >-> In ! LoginOp("12452265")
-    -- >-> Out ! Response( Forbidden)
-    -- >-> In ! LoginOp("Stillcorrect")
-    -- >-> Out ! Response( Forbidden)
-    -- >-> In ! LoginOp("")
-    -- >-> Out ! Response( Forbidden)
-    -- >-> In ! LoginOp("_kofke/*fse")
-    -- >-> Out ! Response( Forbidden)
-    -- >-> In ! LoginOp("46516516474efdv1f61d6df")
-    -- >-> Out ! Response( Forbidden)
-    -- >-> In ! LoginOp("vdxfd")
-    -- >-> Out ! Response( Forbidden)
-    -- >-> In ! LoginOp("_==-043056950*/")
-    -- >-> Out ! Response( Forbidden)
+    LoginIn ! LoginCreds("wrong", "wrong") 
+    >-> LoginOut ! Response(Forbidden)
 ENDDEF
 
 PURPDEF PurposeExamples ::=
     CHAN IN 	LoginIn    
     CHAN OUT   	LoginOut
 
-    GOAL examples ::= matrixLogin [LoginIn, LoginOut] ()
+    GOAL examples ::= examples [LoginIn, LoginOut] ()
 ENDDEF
