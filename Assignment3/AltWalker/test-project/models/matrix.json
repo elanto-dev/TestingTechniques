@@ -1,0 +1,103 @@
+{
+	"name": "Default Models",
+	"models": [
+		{
+			"name": "Matrix",
+			"generator": "random(edge_coverage(100) && vertex_coverage(100))",
+			"startElementId": "v0",
+			"vertices": [
+				{
+					"id": "v0",
+					"name": "Logged_Out"
+				},
+				{
+					"id": "v2",
+					"name": "Logged_In"
+				},
+				{
+					"id": "v3",
+					"name": "Made_Room"
+				},
+				{
+					"id": "v4",
+					"name": "Message_Sent"
+				},
+				{
+					"id": "v5",
+					"name": "Message_Edited"
+				},
+				{
+					"id": "v6",
+					"name": "Room_Left"
+				},
+				{
+					"id": "v1",
+					"name": "Message_Redacted"
+				}
+			],
+			"edges": [
+				{
+					"id": "e0",
+					"name": "log_in",
+					"sourceVertexId": "v0",
+					"targetVertexId": "v2"
+				},
+				{
+					"id": "e1",
+					"name": "log_out",
+					"sourceVertexId": "v2",
+					"targetVertexId": "v0"
+				},
+				{
+					"id": "e2",
+					"name": "create_room",
+					"sourceVertexId": "v2",
+					"targetVertexId": "v3"
+				},
+				{
+					"id": "e4",
+					"name": "send_message",
+					"sourceVertexId": "v3",
+					"targetVertexId": "v4"
+				},
+				{
+					"id": "e6",
+					"name": "redact_message",
+					"sourceVertexId": "v4",
+					"targetVertexId": "v1"
+				},
+				{
+					"id": "e5",
+					"name": "edit_message",
+					"sourceVertexId": "v4",
+					"targetVertexId": "v5"
+				},
+				{
+					"id": "e7",
+					"name": "redact_message",
+					"sourceVertexId": "v5",
+					"targetVertexId": "v1"
+				},
+				{
+					"id": "e8",
+					"name": "leave_room",
+					"sourceVertexId": "v3",
+					"targetVertexId": "v6"
+				},
+				{
+					"id": "e9",
+					"name": "forget_room",
+					"sourceVertexId": "v6",
+					"targetVertexId": "v2"
+				},
+				{
+					"id": "e3",
+					"sourceVertexId": "v1",
+					"targetVertexId": "v3",
+					"name": "tau"
+				}
+			],
+			"actions": []
+		}
+	]
+}
