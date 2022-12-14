@@ -156,8 +156,8 @@ MODELDEF  MatrixModel
         CHAN OUT   LoginOut,CreateRoomOut
 
         BEHAVIOUR  (
-                     -- matrixLogin [ LoginIn, LoginOut ] ()
-                     -- ##
+                     matrixLogin [ LoginIn, LoginOut ] ()
+                     ##
                       matrixCreateRoom [ CreateRoomIn , CreateRoomOut] () 
                      )
 

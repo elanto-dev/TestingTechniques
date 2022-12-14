@@ -1,16 +1,10 @@
 import socket
+import threading
 import constants
 import apirequests as api
 from requestsapi import login, create_room
 seperator = '@' #this will help getting username and password from torxakis very easily
 host = "localhost"
-
-class ConnectionData:
-    server_ip = constants.server_ip
-    server_address = constants.server_ip
-    access_token = ""
-
-condata = ConnectionData
 
 
 def loginInput(userpass):
@@ -23,10 +17,10 @@ def loginInput(userpass):
 def loginOutput(mess_in):
     response , access_token = loginInput(mess_in)
     if response.status_code   == 200:
-        mess_out = 'ResponseCode(OK)\n' 
+        mess_out = 'Response(OK)\n' 
         return mess_out
     elif response.status_code   == 403:
-        mess_out = 'ResponseCode(Forbidden)\n'
+        mess_out = 'Response(Forbidden)\n'
         return mess_out
 
 
@@ -49,15 +43,10 @@ def roomCreateInput(mess_in):
 def roomCreateOutput(mess_in):
     response = roomCreateInput(mess_in)
     if response.status_code   == 200:
-        mess_out = 'ResponseCode(OK)\n' 
+        mess_out = 'Response(OK)\n' 
     elif response.status_code   == 403:
-        mess_out = 'ResponseCode(Forbidden)\n'
+        mess_out = 'Response(Forbidden)\n'
     return mess_out
-    
-
-        
-condata = ConnectionData()
-condata.server_address = 'https://' + condata.server_ip + ':443/_matrix/client/v3'
 
 # create a socket object
 s1 = socket.socket()
@@ -80,8 +69,8 @@ conn2, addr2 = s2.accept()
 
 print(f'Connected by {addr1} and {addr2}')
 
-while True:
-    if conn1:
+def connection1():
+    while True:
         print('we are using create room port')
         data = conn1.recv(1024)
         received = data.decode()
@@ -90,9 +79,20 @@ while True:
         conn1.send(mess_out.encode())
         print("Data sent: ",  mess_out )
 
-    elif conn2:
+def connection2():
+    while True:
         print('we are using login port')
-
+        data = conn2.recv(1024)
+        received = data.decode()
+        print("Data received: ",  received )
+        mess_out = loginOutput(received)
+        conn2.send(mess_out.encode())
+        print("Data sent: ",  mess_out )
+        
+x = threading.Thread(target=connection1)
+x2 = threading.Thread(target=connection2)
+x.start()
+x2.start()
 
 
 
