@@ -1,0 +1,11 @@
+PROCDEF examples [ LoginIn :: LoginOp; LoginOut :: Response ] () HIT ::=
+    LoginIn ! LoginCreds("wrong", "wrong") 
+    >-> LoginOut ! Response(Forbidden)
+ENDDEF
+
+PURPDEF PurposeExamples ::=
+    CHAN IN 	LoginIn    
+    CHAN OUT   	LoginOut
+
+    GOAL examples ::= examples [LoginIn, LoginOut] ()
+ENDDEF
