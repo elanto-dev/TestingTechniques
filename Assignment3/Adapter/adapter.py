@@ -43,10 +43,10 @@ def roomCreateInput(mess_in):
 def roomCreateOutput(mess_in):
     response = roomCreateInput(mess_in)
     if response.status_code   == 200:
-        mess_out = 'Response(OK)\n' 
-    elif response.status_code   == 403:
-        mess_out = 'Response(Forbidden)\n'
-    return mess_out
+        return 'Response(OK)\n' 
+    elif response.status_code   == 401:
+        return 'Response(Unauthorized)\n'
+    return 'Should not be reached!'
 
 # create a socket object
 s1 = socket.socket()
