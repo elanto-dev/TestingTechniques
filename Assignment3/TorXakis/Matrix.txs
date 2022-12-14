@@ -43,7 +43,7 @@ ENDDEF
 -- Login Input Validity Functions
 
 FUNCDEF isValid_InvalidLogin (op :: LoginOp) :: Bool ::=
-       isLoginCreds ( op ) /\ (len(username( op )) > 5) /\ (len(password( op )) > 5)  
+       isLoginCreds ( op ) /\ (strinre (username(op), REGEX ('[a-z][0-9]*'))) /\ (strinre (password(op), REGEX ('[a-z][0-9]*')))  
 ENDDEF
 
 FUNCDEF isValid_ValidLogin (op :: LoginOp) :: Bool ::=
@@ -94,12 +94,11 @@ ENDDEF
 
 FUNCDEF isValid_InvalidRoomDetails ( cop :: CreateRoomOp) :: Bool ::=
        isRoomDetails ( cop ) /\ (roomname ( cop ) == "anyname") /\ (roomtopic (cop) == "anytopic") /\ (roompreset(cop)== "public_chat")
-       /\ (roomversion(cop) == 1) /\ (accesstoken(cop) == "wrongtoken"){-things should change to a proper regex -}
+       /\ (roomversion(cop) == 1) /\ (strinre (accesstoken(cop), REGEX ('[a-z][0-9]*'))) {-things should change to a proper regex -}
 ENDDEF
 
 ---------------------------------------------------------------------------------------------
 --create a room scenario
- --auth code needed
 
 PROCDEF matrixValidCreateRoom [ CreateRoomIn :: CreateRoomOp; CreateRoomOut :: Response ] ( resp :: Response ) ::=
        CreateRoomOut ! resp
