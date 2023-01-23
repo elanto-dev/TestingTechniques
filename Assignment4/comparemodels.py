@@ -254,6 +254,9 @@ for i in range(0,3):
 
     transdict = fill_transition_dictionary({}, transformedmodel)
 
+    # make sure that the amount of transitions is equal
+    if len(userdict) != len(transdict):
+        print("different transition counts: no isomorphism")
 
     # test the transition dictionaries for equivalence no output means a perfect match and thus isomorphism
 
